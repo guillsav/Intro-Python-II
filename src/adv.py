@@ -66,7 +66,6 @@ while True:
     # print(len(cmd))
     if len(cmd) > 1:
         cmd2 = cmd[1]
-
     # Parse user inputs (n, s, e, w, q)
     if cmd1 in valid_directions:
         # If input is valid, move the player and loop
