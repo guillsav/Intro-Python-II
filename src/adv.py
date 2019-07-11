@@ -1,5 +1,6 @@
 from room import Room
 from player import Player
+from item import Item
 
 
 # Declare all the rooms
@@ -33,11 +34,20 @@ room['narrow'].w_to = room['foyer']
 room['narrow'].n_to = room['treasure']
 room['treasure'].s_to = room['narrow']
 
+the_map = Item('map', 'Leads to the treasure')
+key = Item('key', 'Opens the treasure chest')
+chest = Item('chest', 'Holds the treasure')
+
+
+room['outside'].items.append(the_map)
+room['overlook'].items.append(key)
+room['treasure'].items.append(chest)
+
 #
 # Main
 #
 # Make a new player object that is currently in the 'outside' room.
-player = Player(room['outside'])
+player = Player("Guillaume", room['outside'])
 
 # Write a loop that:
 #
@@ -45,66 +55,43 @@ player = Player(room['outside'])
 # * Prints the current description (the textwrap module might be useful here).
 # * Waits for user input and decides what to do.
 #
+
+valid_directions = ['n', 's', 'w', 'e']
+valid_tasks = ['get', 'drop', 'open']
+
 while True:
-    print(player.current_room.name)
-    print(player.current_room.description)
-    print('\n')
-    user_input = input('Enter Directions: ').lower()[0]
-    print('\n')
-    print(user_input)
+    # Wait for user input
+    cmd = input("-> ").lower().split()
+    cmd1 = cmd[0]
+    # print(len(cmd))
+    if len(cmd) > 1:
+        cmd2 = cmd[1]
 
-    if player.current_room.name == 'Outside Cave Entrance' and user_input == 'n':
-        player.current_room = room['foyer']
-        print(player.current_room.name)
-        print('\n')
-    elif player.current_room.name == 'Outside Cave Entrance' and user_input != 'n':
-        print('You can only go north from this room!')
-        print('\n')
-    if player.current_room.name == 'Foyer' and user_input == 's':
-        player.current_room = room['outside']
-        print(player.current_room.name)
-        print('\n')
-    elif player.current_room.name == 'Foyer' and user_input == 'n':
-        player.current_room = room['overlook']
-        print(player.current_room.name)
-        print('\n')
-    elif player.current_room.name == 'Foyer' and user_input == 'e':
-        player.current_room = room['narrow']
-        print(player.current_room.name)
-        print('\n')
-    elif player.current_room.name == 'Foyer' and user_input != 's' or user_input != 'n' or user_input != 'e':
-        print('You can only go north, south, or east from this room!')
-        print('\n')
-    if player.current_room.name == 'Grand Overlook' and user_input == 's':
-        player.current_room = room['foyer']
-        print(player.current_room.name)
-        print('\n')
-    elif player.current_room.name == 'Grand Overlook' and user_input != 's':
-        print('You can only go south from this room!')
-        print('\n')
-    if player.current_room.name == 'Narrow Passage' and user_input == 'w':
-        player.current_room = room['foyer']
-        print(player.current_room.name)
-        print('\n')
-    elif player.current_room.name == 'Narrow Passage' and user_input == 'n':
-        player.current_room = room['treasure']
-        print(player.current_room.name)
-        print('\n')
-    elif player.current_room.name == 'Narrow Passage' and user_input != 'w' or user_input != 'n':
-        print('You can only go west or north from this room!')
-        print('\n')
-    if player.current_room.name == 'Treasure Chamber' and user_input == 's':
-        player.current_room = room['narrow']
-        print(player.current_room.name)
-        print('\n')
-    elif player.current_room.name == 'Treasure Chamber' and user_input != 's':
-        print('You can only go south from this room!')
-        print('\n')
-    if user_input == 'q':
-        print('Goodbye')
-        break
-
-# If the user enters a cardinal direction, attempt to move to the room there.
-# Print an error message if the movement isn't allowed.
-#
-# If the user enters "q", quit the game.
+    # Parse user inputs (n, s, e, w, q)
+    if cmd1 in valid_directions:
+        # If input is valid, move the player and loop
+        player.travel(cmd1)
+    elif cmd1 == "i":
+        print(player.print_inventory())
+    elif cmd1 == "q":
+        print("Goodbye!")
+        exit()
+    elif cmd1 in valid_tasks:
+        if cmd1 == 'get':
+            for i in player.current_room.items:
+                # Check if item exist in the room
+                if i.name == cmd2:
+                    player.get(i)
+                    print(player.current_room.remove_item(i))
+                else:
+                    print(f"Sorry there is no {cmd2} in the room")
+        if cmd1 == 'drop':
+            for i in player.items:
+                # Check if item exist in the room
+                if i.name == cmd2:
+                    player.drop(i)
+                    print(player.current_room.add_item(i))
+                else:
+                    print(f"Sorry there is no {cmd2} in the room")
+    else:
+        print("I did not recognize that command")
