@@ -34,12 +34,12 @@ room['narrow'].w_to = room['foyer']
 room['narrow'].n_to = room['treasure']
 room['treasure'].s_to = room['narrow']
 
-the_map = Item('map', 'Leads to the treasure')
+treasure_map = Item('map', 'Leads to the treasure')
 key = Item('key', 'Opens the treasure chest')
 chest = Item('chest', 'Holds the treasure')
 
 
-room['outside'].items.append(the_map)
+room['outside'].items.append(treasure_map)
 room['overlook'].items.append(key)
 room['treasure'].items.append(chest)
 
